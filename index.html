@@ -30,6 +30,7 @@
 		return '<a download="file.rap" href="data:application/stream;base64,'+btoa(bin)+'">RAP</a>'
 	}
 	function searchDB(query){
+		if(!query)return;
 		var reg=new RegExp(query,'i');
 		var results=DB.filter(function(a){return a[4].match(reg)})
 		var html=results.slice(0,100).map(function(a){
