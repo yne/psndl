@@ -45,6 +45,7 @@
 		$.get(url,function(db_str){
 			db=db_str.split("\n").map(function(c){return c.split(';')})
 			localStorage['DB']=JSON.stringify(db)
+			openDB()
 		})
 	}
 </script>
