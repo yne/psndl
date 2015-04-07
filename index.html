@@ -27,7 +27,7 @@
 		return '<a download="file.rap" href="data:application/stream;base64,'+btoa(bin)+'">RAP</a>'
 	}
 	function searchDB(query){
-		if(!query)return;
+		if(!query || !DB)return;
 		var reg=new RegExp(query,'i');
 		var results=DB.filter(function(a){return a[4].match(reg)})
 		var html=results.slice(0,100).map(function(a){
@@ -45,6 +45,7 @@
 		$.get(url,function(db_str){
 			db=db_str.split("\n").map(function(c){return c.split(';')})
 			localStorage['DB']=JSON.stringify(db)
+			$('#results').innerHTML="DataBase Loaded ("+db.length+" entries) you can start searching !"
 			openDB()
 		})
 	}
