@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf8">
+<script>
+	$=document.querySelector.bind(document);
+	$.get=function(url,ok_cb,ko_cb){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange=function(){
+			if(xhr.readyState!=4)return;
+			if(xhr.status==200)return ok_cb(xhr.response);
+			if(ko_cb)return ko_cb(xhr.response,xhr.statusText);
+		};
+		xhr.open('GET',url);
+		xhr.send();
+	}
+	var DB;
+	function makeLink(row){
+		//TODO user can select favorit CDN (Zeus,Ares ...)
+		var cdn="zeus"
+		return "http://"+cdn+".dl.playstation.net/cdn/"+row[1]+"/"+row[0]+"_00/"+row[2]+".pkg"
+	}
+	function getRap(hex){
+		alert("todo")
+	}
+	function makeRap(hex){
+		if(Number.parseInt(hex,16)==0)
+			return "<i>Circle to activate</i>"
+		var bin=(hex.match(/../g)||[]).map(function(x){return String.fromCharCode(parseInt(x,16))}).join('');
+		return '<a download="file.rap" href="data:application/stream;base64,'+btoa(bin)+'">RAP</a>'
+	}
+	function searchDB(query){
+		var reg=new RegExp(query,'i');
+		var results=DB.filter(function(a){return a[4].match(reg)})
+		var html=results.slice(0,100).map(function(a){
+			return '<li><a href="'+makeLink(a)+'">'+a[4]+" ("+a[0][2]+")</a> "+makeRap(a[3])+"</li>"}).join('')
+		$("#results").innerHTML=html;
+	}
+	function openDB(){
+		DB=JSON.parse(localStorage['DB'])
+		$('[name="q"]').disabled=false;
+	}
+	function getDB(url){
+		if(localStorage['DB'])
+			return openDB();
+		$('#results').innerHTML="Loading DataBase ..."
+		$.get(url,function(db_str){
+			db=db_str.split("\n").map(function(c){return c.split(';')})
+			localStorage['DB']=JSON.stringify(db)
+			loadDb()
+		})
+	}
+</script>
+<style>
+	
+</style>
+</head>
+<body onload="getDB('db.csv');this.onhashchange()" onhashchange="searchDB(document.location.hash.substr(1))">
+	<form onsubmit="document.location.hash=this.elements['q'].value;return false;">
+		<input type="text" name="q" disabled="" onkeyup="this.form.onsubmit()" placeholder="Name search ..">
+		<input type="submit" value="search">
+	</form>
+	<ul id="results"></ul>
+</body>
+</html>
