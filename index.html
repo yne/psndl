@@ -20,9 +20,6 @@
 		var cdn="zeus"
 		return "http://"+cdn+".dl.playstation.net/cdn/"+row[1]+"/"+row[0]+"_00/"+row[2]+".pkg"
 	}
-	function getRap(hex){
-		alert("todo")
-	}
 	function makeRap(hex){
 		if(Number.parseInt(hex,16)==0)
 			return "<i>Circle to activate</i>"
@@ -48,7 +45,6 @@
 		$.get(url,function(db_str){
 			db=db_str.split("\n").map(function(c){return c.split(';')})
 			localStorage['DB']=JSON.stringify(db)
-			loadDb()
 		})
 	}
 </script>
