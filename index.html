@@ -2,63 +2,58 @@
 <html>
 <head>
 <meta charset="utf8">
+<meta content="width=device-width, user-scalable=no" name="viewport"/>
 <script>
 	$=document.querySelector.bind(document);
-	$.get=function(url,ok_cb,ko_cb){
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange=function(){
-			if(xhr.readyState!=4)return;
-			if(xhr.status==200)return ok_cb(xhr.response);
-			if(ko_cb)return ko_cb(xhr.response,xhr.statusText);
-		};
-		xhr.open('GET',url);
-		xhr.send();
-	}
 	var DB;
-	function makeLink(row){
-		//TODO user can select favorit CDN (Zeus,Ares ...)
-		var cdn="zeus"
-		return "http://"+cdn+".dl.playstation.net/cdn/"+row[1]+"/"+row[0]+"_00/"+row[2]+".pkg"
+	function makeRap(row){
+		if(row[3]=="")return ""
+		if(row[3]==0 )return '<span title="Press Circle in ReactPSN to activate this game">(o)</span>'//\u233E\u25CB\u26AA\u29BF\u29BE
+		return '<a download="'+row[1]+'-'+row[0]+'_00-'+row[3].substr(16)+'.rap" href="data:application/stream;base64,'+btoa((row[3].match(/../g)||[]).map(function(x){return String.fromCharCode(parseInt(x,16))}).join(''))+'">RAP</a>'
 	}
-	function makeRap(hex){
-		if(Number.parseInt(hex,16)==0)
-			return "<i>Circle to activate</i>"
-		var bin=(hex.match(/../g)||[]).map(function(x){return String.fromCharCode(parseInt(x,16))}).join('');
-		return '<a download="file.rap" href="data:application/stream;base64,'+btoa(bin)+'">RAP</a>'
+	function searchDB(q,out){
+		$("#about").hidden = !(out.hidden = !q);
+		out.innerHTML=DB.filter(function(a){return a[4].match(q,'i')}).slice(0,100).map(function(a){return '<li><a href="http://zeus.dl.playstation.net/cdn/'+a[1]+'/'+a[0]+'_00/'+a[2]+'.pkg">'+a[4]+" ("+a[0][2]+")</a> "+makeRap(a)+"</li>"}).join('')
 	}
-	function searchDB(query){
-		if(!query || !DB)return;
-		var reg=new RegExp(query,'i');
-		var results=DB.filter(function(a){return a[4].match(reg)})
-		var html=results.slice(0,100).map(function(a){
-			return '<li><a href="'+makeLink(a)+'">'+a[4]+" ("+a[0][2]+")</a> "+makeRap(a[3])+"</li>"}).join('')
-		$("#results").innerHTML=html;
-	}
-	function openDB(){
-		DB=JSON.parse(localStorage['DB'])
-		$('[name="q"]').disabled=false;
-	}
-	function getDB(url){
-		if(localStorage['DB'])
-			return openDB();
-		$('#results').innerHTML="Loading DataBase ..."
-		$.get(url,function(db_str){
-			db=db_str.split("\n").map(function(c){return c.split(';')})
-			localStorage['DB']=JSON.stringify(db)
-			$('#results').innerHTML="DataBase Loaded ("+db.length+" entries) you can start searching !"
-			openDB()
-		})
+	function loadDB(url){
+		$('#q').disabled=!localStorage['DB'];
+		if(!localStorage['DB']){//DB not in cache
+			$('#q').placeholder="Loading DataBase ..."
+			var xhr = new XMLHttpRequest();
+			xhr.onload=function(ev){//xhr.onloadend
+				localStorage['DB']=JSON.stringify(ev.target.response.split("\n").map(function(c){return c.split(';')}))
+				loadDB();//now that the DB is in localstorage, do a self-call
+			}
+			xhr.open('GET',url);
+			xhr.send();
+		}else{
+			DB=JSON.parse(localStorage['DB'])
+			$('#q').placeholder="Search in "+DB.length+" url"
+			document.body.onhashchange()//trigger a hash search (if any)
+		}
 	}
 </script>
 <style>
-	
+	ul{padding:0;list-style:none;}
+	*[title]{cursor:help;}
 </style>
 </head>
-<body onload="getDB('db.csv');this.onhashchange()" onhashchange="searchDB(document.location.hash.substr(1))">
+<body onload="loadDB('db.csv')" onhashchange="try{searchDB(document.location.hash.substr(1),$('#list'))}catch(e){alert(e)}">
 	<form onsubmit="document.location.hash=this.elements['q'].value;return false;">
-		<input type="text" name="q" disabled="" onkeyup="this.form.onsubmit()" placeholder="Name search ..">
-		<input type="submit" value="search">
+		<input type="text" id="q" onkeyup="this.form.onsubmit()"/>
+		<input type="submit" value="search"/>
 	</form>
-	<ul id="results"></ul>
+	<p id="about">
+#Welcome to the PSN repository.
+
+- [Fork](https://github.com/yne/PSN) this project.
+- [Pull requests](https://github.com/yne/PSN/pulls) are welcome.
+- [Report](https://github.com/yne/PSN/issues/new) a bug/issue/idea/request.
+- [Download](https://github.com/yne/PSN/archive/gh-pages.zip) the sources.
+- [View](https://raw.githubusercontent.com/yne/PSN/gh-pages/db.csv) the current database
+	</p>
+	<ul id="list"/>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script>$('#about').innerHTML=marked($('#about').innerHTML)</script>
 </body>
 </html>
