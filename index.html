@@ -13,7 +13,8 @@
 	}
 	function searchDB(q,out){
 		$("#about").hidden = !(out.hidden = !q);
-		out.innerHTML=DB.filter(function(a){return a[4].match(q,'i')}).slice(0,100).map(function(a){return '<li><a href="http://zeus.dl.playstation.net/cdn/'+a[1]+'/'+a[0]+'_00/'+a[2]+'.pkg">'+a[4]+" ("+a[0][2]+")</a> "+makeRap(a)+"</li>"}).join('')
+		var rule=new RegExp(q,'i');
+		out.innerHTML=DB.filter(function(a){return a[4].match(rule)}).slice(0,100).map(function(a){return '<li><a href="http://zeus.dl.playstation.net/cdn/'+a[1]+'/'+a[0]+'_00/'+a[2]+'.pkg">'+a[4]+" ("+a[0][2]+")</a> "+makeRap(a)+"</li>"}).join('')
 	}
 	function loadDB(url){
 		$('#q').disabled=!localStorage['DB'];
@@ -53,7 +54,7 @@
 - [View](https://raw.githubusercontent.com/yne/PSN/gh-pages/db.csv) the current database
 	</p>
 	<ul id="list"/>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 	<script>$('#about').innerHTML=marked($('#about').innerHTML)</script>
 </body>
 </html>
