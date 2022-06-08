@@ -1,0 +1,27 @@
+name: Add a new URL
+description: Automatically checked and imported into the database
+title: "New entry request"
+labels: ["add", "ci"]
+assignees:
+  - yne
+body:
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: Full dl.playstation.net URL
+      placeholder: ex. http://zeus.dl.playstation.net/cdn/EP0000/NPEB00000_00/example.pkg
+    validations:
+      required: true
+  - type: input
+    id: rap
+    attributes:
+      label: RAP hexdump (optional)
+      description: RAP file (16 Bytes) in hexdump format (32 Character)
+      placeholder: ex. 48AF207872F572D11C83A152481A6C1F
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your contribution !
