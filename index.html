@@ -24,7 +24,8 @@
 			var hex = row[4];
 			if (!hex) return "";
 			if (hex == 0) return '<span>press Circle in ReactPSN</span>';
-			return '<a download="' + row[1] + '-' + row[0] + '_00-' + hex.substr(16) + '.rap" href="data:application/octet-stream,' + hex.replace(/../g, function(a){ return '%'+a;}) + '">RAP</a>';
+			return '<a download="' + row[1] + '-' + row[0] + '_00-' + hex.substr(16) + '.rap" href="' + hex.substr(16) + '.rap">RAP</a>';
+			//return '<a download="' + row[1] + '-' + row[0] + '_00-' + hex.substr(16) + '.rap" href="data:application/octet-stream,' + hex.replace(/../g, function(a){ return '%'+a;}) + '">RAP</a>';
 		}
 		function fetchDB() {
 			f.fetch.disabled = true;

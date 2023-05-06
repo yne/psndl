@@ -1,7 +1,7 @@
 # PSNDL
 
 Playstation Network Package [Search engine](http://yne.github.io/psndl)
-and [PKGi-PS3](https://github.com/bucanero/pkgi-ps3) databases at https://yne.fr/psndl/config.txt
+and [PKGi-PS3](https://github.com/bucanero/pkgi-ps3) databases at <https://yne.fr/psndl/config.txt>
 
 Current dataset was aggragated from
 

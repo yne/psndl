@@ -1,9 +1,0 @@
-url_games https://yne.fr/psndl/pkgi_games.csv
-url_dlcs https://yne.fr/psndl/pkgi_dlcs.csv
-url_themes https://yne.fr/psndl/pkgi_themes.csv
-url_avatars https://yne.fr/psndl/pkgi_avatars.csv
-url_demos https://yne.fr/psndl/pkgi_demos.csv
-url_updates https://yne.fr/psndl/pkgi_updates.csv
-url_emulators https://yne.fr/psndl/pkgi_emulators.csv
-url_apps https://yne.fr/psndl/pkgi_apps.csv
-url_tools https://yne.fr/psndl/pkgi_tools.csv
