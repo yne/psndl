@@ -7,7 +7,6 @@
 <header>
 	<a href="https://github.com/yne/psndl">PSNDL</a>
 	<form name="engine" onsubmit="location.hash=query.value;render();return false">
-		<input type="hidden"  size="55" name="disclamer" value="PS3 web browser can't download JS-generated RAP => use a PC" disabled><br>
 		<input type="search" name="query" size="25">
 		<input type="submit" name="send" value="search" disabled>
 		<input type="button" name="fetch" value="reload database" onclick="fetchDB()">
@@ -16,9 +15,7 @@
 <ul id="list"></ul>
 <script>
 	try {
-		var isPS3 = navigator.userAgent.match(/playstation/i);
 		var f = document.forms.engine;
-		if(navigator.userAgent.match(/playstation/i))f.disclamer.type='text'
 		var DB = window.localStorage ? JSON.parse(localStorage.DB || '[]') : [];
 		function makeRap(row) {
 			var hex = row[4];
@@ -52,7 +49,7 @@
 				if (!DB[i][5].match(rule)) continue;
 				found++;
 				var a = DB[i];
-				document.getElementById('list').innerHTML += '<li><a href="http://zeus.dl.playstation.net/cdn/' + a[1] + '/' + a[0] + '_00/' + a[2] + '.pkg">' + a[5] + ' ' + (a[3]) + ' (' + a[0][2] + ")</a> " + makeRap(a) + "</li>";
+				document.getElementById('list').innerHTML += '<li><a href="http://zeus.dl.playstation.net/cdn/' + a[1] + '/' + a[0] + '_00/' + a[2] + '.pkg">' + a[5] + ' ' + (a[3]) + ' [' + a[0] + "]</a> " + makeRap(a) + "</li>";
 			}
 		};
 		f.query.value = location.hash.replace(/^#+/, '');
