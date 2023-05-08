@@ -14,6 +14,18 @@
 </header>
 <ul id="list"></ul>
 <script>
+	function sort(lines, algo) {
+		for (var i = 0; i < lines.length; i++) {
+			for (var j = 0; j < lines.length - i - 1; j++) {
+				if (algo(lines[j], lines[j + 1])) {
+					var temp = lines[j];
+					lines[j] = lines[j + 1];
+					lines[j + 1] = temp;
+				}
+			}
+		}
+		return lines;
+	}
 	try {
 		var f = document.forms.engine;
 		var DB = window.localStorage ? JSON.parse(localStorage.DB || '[]') : [];
@@ -43,17 +55,22 @@
 			f.fetch.type = window.localStorage ? 'button' : 'hidden'; // hide refresh
 			f.send.disabled = DB.length == 0;
 			f.query.placeholder = DB.length + " URL loaded";
-			var rule = new RegExp(decodeURIComponent(location.hash.replace(/^#+/, '')), 'i');
+			var query = decodeURIComponent(location.hash.replace(/^#+/, ''));
+			var rule = new RegExp(query, 'i');
 			document.getElementById('list').innerHTML = "";
-			for (var i = 0, found = 0; i < DB.length && found < 50; i++) {
-				if (!DB[i][5].match(rule)) continue;
-				found++;
-				var a = DB[i];
+			var matches = [];
+			for (var i = 0; i < DB.length && matches.length < 50; i++) {
+				if (DB[i][5].match(rule) || (DB[i][0] == query))
+					matches.push(DB[i]);
+			}
+			sort(matches, function (a, b) { return a[5] > b[5]; });
+			for (var i = 0; i < matches.length; i++) {
+				var a = matches[i];
 				document.getElementById('list').innerHTML += '<li><a href="http://zeus.dl.playstation.net/cdn/' + a[1] + '/' + a[0] + '_00/' + a[2] + '.pkg">' + a[5] + ' ' + (a[3]) + ' [' + a[0] + "]</a> " + makeRap(a) + "</li>";
 			}
 		};
 		f.query.value = location.hash.replace(/^#+/, '');
-		// document.body.onhashchange = render; dont work on Silk engine
+		// document.body.onhashchange = render; // dont work on Silk engine, but still usefull for other
 		render();
 		if (!DB.length) {
 			fetchDB()
