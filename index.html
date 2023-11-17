@@ -11,6 +11,8 @@
 		<input type="submit" name="send" value="search" disabled>
 		<input type="button" name="fetch" value="reload database" onclick="fetchDB()">
 	</form>
+	<!-- Alphabetic Search bar -->
+	<div id="alphabet-search">	</div>
 </header>
 <ul id="list"></ul>
 <script>
@@ -51,12 +53,89 @@
 			xhr.open('GET', 'db.csv');
 			xhr.send();
 		}
+		function alphabet_search_bar() {
+			var alphabetSearchDiv = document.getElementById("alphabet-search");
+
+			// Create a table for the alphabet-search
+			var table = document.createElement("table");
+			var tbody = document.createElement("tbody");
+			var row = document.createElement("tr");
+
+			// Create "ALL" before the alphabet for better access
+			var cell_all = document.createElement("td")
+			var link_all = document.createElement("a");
+			link_all.href = "#"
+			var letter = 'All'
+			link_all.onclick = function (letter) {
+				return function () {
+					searchByAlphabet(letter);
+					console.log(letter)
+				};
+			} (letter)
+			link_all.textContent = letter
+			cell_all.appendChild(link_all)
+			row.appendChild(cell_all)
+
+			// Create a cell for each character
+			for (var i = 65; i <= 90; i++) { // ASCII codes for A-Z
+				var letter = String.fromCharCode(i);
+
+				// Create a table cell
+				var cell = document.createElement("td");
+
+				// Create a link with the specified href and onclick attributes
+				var link = document.createElement("a");
+				link.href = "#";
+				link.onclick = function (letter) {
+					return function () {
+						searchByAlphabet(letter);
+					};
+				}(letter); // Use a closure to capture the current value of 'letter'
+
+				// Set the text content of the link to the current letter
+				link.textContent = letter;
+
+				// Append the link to the cell
+				cell.appendChild(link);
+
+				// Append the cell to the row
+				row.appendChild(cell);
+			}
+
+			// Append the row to the tbody
+			tbody.appendChild(row);
+
+			// Append the tbody to the table
+			table.appendChild(tbody);
+
+			// Append the table to the alphabetSearchDiv
+			alphabetSearchDiv.appendChild(table);
+
+
+		}
+		// function that passes the letter to searching Regex
+		function searchByAlphabet(letter) {
+			location.hash = letter ;
+			console.log("letter ", letter)
+			render();
+		}
+
 		function render() {
 			f.fetch.type = window.localStorage ? 'button' : 'hidden'; // hide refresh
 			f.send.disabled = DB.length == 0;
 			f.query.placeholder = DB.length + " URL loaded";
 			var query = decodeURIComponent(location.hash.replace(/^#+/, ''));
-			var rule = new RegExp(query, 'i');
+			var rule;
+
+			// Check if the query represents an alphabet
+			if (/^[A-Za-z]$/.test(query)) {
+				// search with alphabet (changes the Regex)
+				rule = new RegExp("^" + query, "i");
+			} else {
+				// Loading all the links from the database.
+				rule = new RegExp(query, "i");
+			}
+
 			document.getElementById('list').innerHTML = "";
 			var matches = [];
 			for (var i = 0; i < DB.length && matches.length < 50; i++) {
@@ -71,6 +150,7 @@
 		};
 		f.query.value = location.hash.replace(/^#+/, '');
 		// document.body.onhashchange = render; // dont work on Silk engine, but still usefull for other
+		alphabet_search_bar()
 		render();
 		if (!DB.length) {
 			fetchDB()
@@ -118,4 +198,25 @@
 	input {
 		font-size: 1.5em
 	}
+	#alphabet-search {
+        display: flex;
+        justify-content: center; /* Center content horizontally */
+        align-items: center; /* Center content vertically */
+    }
+	#alphabet-search table {
+        border-collapse: collapse;
+    }
+
+    #alphabet-search td {
+        border-right: 1px solid #ccc; /* Single line between adjacent tds */
+        padding: 5px; /* Adjust as needed */
+    }
+
+    #alphabet-search td:last-child {
+        border-right: none; /* Remove border for the last td */
+    }
+	/* Add shadow when the td is clicked */
+	/* #alphabet-search td:active {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+    } */
 </style>
