@@ -10,6 +10,7 @@
 		<input type="search" name="query" size="25">
 		<input type="submit" name="send" value="search" disabled>
 		<input type="button" name="fetch" value="reload database" onclick="fetchDB()">
+		<ul id="letters"><button type="button" onclick="location.hash='^'+this.innerHTML;render()">[0-9]</button></ul>
 	</form>
 </header>
 <ul id="list"></ul>
@@ -56,19 +57,25 @@
 			f.send.disabled = DB.length == 0;
 			f.query.placeholder = DB.length + " URL loaded";
 			var query = decodeURIComponent(location.hash.replace(/^#+/, ''));
+			var startsWith = query.length && query[0] == '^';
 			var rule = new RegExp(query, 'i');
-			document.getElementById('list').innerHTML = "";
 			var matches = [];
-			for (var i = 0; i < DB.length && matches.length < 50; i++) {
+			for (var i = 0; i < DB.length && matches.length < (startsWith ? 999 : 99); i++) {
 				if (DB[i][5].match(rule) || (DB[i][0] == query))
 					matches.push(DB[i]);
 			}
 			sort(matches, function (a, b) { return a[5] > b[5]; });
 			for (var i = 0; i < matches.length; i++) {
 				var a = matches[i];
-				document.getElementById('list').innerHTML += '<li><a href="http://zeus.dl.playstation.net/cdn/' + a[1] + '/' + a[0] + '_00/' + a[2] + '.pkg">' + a[5] + ' ' + (a[3]) + ' [' + a[0] + "]</a> " + makeRap(a) + "</li>";
+				matches[i] = '<li><a href="http://zeus.dl.playstation.net/cdn/' + a[1] + '/' + a[0] + '_00/' + a[2] + '.pkg">' + a[5] + ' ' + (a[3]) + ' [' + a[0] + "]</a> " + makeRap(a) + "</li>";
 			}
+			document.getElementById('list').innerHTML = matches.join('');
 		};
+		var buttons = '';
+		for (var c = 65; c < 91; c++) {
+			buttons += '<button type="button" onclick="location.hash=\'^\'+this.innerHTML;render()">' + String.fromCharCode(c) + '</button>';
+		}
+		document.getElementById("letters").innerHTML += buttons;
 		f.query.value = location.hash.replace(/^#+/, '');
 		// document.body.onhashchange = render; // dont work on Silk engine, but still usefull for other
 		render();
